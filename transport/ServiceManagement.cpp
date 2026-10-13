@@ -898,7 +898,9 @@ sp<::android::hidl::base::V1_0::IBase> getRawServiceInternal(const std::string& 
 
     sp<IServiceManager1_1> sm;
     Transport transport = Transport::EMPTY;
-    if (kIsRecovery) {
+    if (kIsRecovery && !android::base::GetBoolProperty("hwservicemanager.ready", false)) {
+        // Minimal recoveries use passthrough HALs. A recovery with a running
+        // hardware service manager can also consume vendor binderized HALs.
         transport = Transport::PASSTHROUGH;
     } else {
         sm = defaultServiceManager1_1();
